@@ -9,9 +9,22 @@ const updateAPIURL = (idInstance) => {
     baseUrl = `https://${inst}.api.greenapi.com`;
 }
 
+const updateInstanceData = () => {
+    idInstance = document.getElementById('idInstance').value;
+    apiTokenInstance = document.getElementById('apiTokenInstance').value;
+
+    if(!idInstance || !apiTokenInstance) {
+        alert("Заполните idInstance и apiTokenInstance")
+        return false
+    }
+
+    updateAPIURL(idInstance);
+
+    return true
+}
+
 const getSettings = async () => {
     try {
-        updateAPIURL(idInstance);
 
         const url = `${baseUrl}/waInstance${idInstance}/getSettings/${apiTokenInstance}`;
 
@@ -78,8 +91,9 @@ const sendFileByUrl = async (recipient, urlFile) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('getSettings').addEventListener('click', () => {
-        idInstance = document.getElementById('idInstance').value;
-        apiTokenInstance = document.getElementById('apiTokenInstance').value;
+        if(!updateInstanceData()){
+            return
+        }
         getSettings(idInstance, apiTokenInstance).then(data => {
             document.getElementById('response').value = JSON.stringify(data, null, 2);
             settings = data
@@ -87,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('getStateInstance').addEventListener('click', () => {
+        if(!updateInstanceData()){
+            return
+        }
         getState().then(data => {
             document.getElementById('response').value = JSON.stringify(data, null, 2);
             state = data
@@ -94,16 +111,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('sendMessage').addEventListener('click', () => {
+        if(!updateInstanceData()){
+            return
+        }
         const phoneNumber = document.getElementById('phoneNumber').value;
         const message = document.getElementById('message').value;
+        if(!phoneNumber || !message){
+            alert("Заполните поля номера телефона и сообщения")
+            return
+        }
         sendMessage(phoneNumber , message).then(data => {
             document.getElementById('response').value = JSON.stringify(data, null, 2);
         } )
     });
 
     document.getElementById('sendFileByUrl').addEventListener('click', () => {
+        if(!updateInstanceData()){
+            return
+        }
         const phoneNumberFile = document.getElementById('phoneNumberFile').value;
         const fileUrl = document.getElementById('fileUrl').value;
+        if(!phoneNumberFile || !fileUrl){
+            alert("Заполните поля номера телефона и ссылки")
+            return
+        }
         sendFileByUrl(phoneNumberFile , fileUrl).then(data => {
             document.getElementById('response').value = JSON.stringify(data, null, 2);
         })
